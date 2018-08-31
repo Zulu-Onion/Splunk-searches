@@ -1,0 +1,13 @@
+Source: 
+https://conf.splunk.com/files/2017/slides/effectively-enhancing-our-soc-with-sysmon-powershell-logging-and-machine-learning-to-detect-and-respond-to-todays-threats.pdf
+
+//Found these somewhat useful with some minor adjustments 
+
+Bloodhound + WinSec Event Log:
+sourcetype="WinEventLog:Security" host=*** EventCode=4769 (user!=***) | timechart span=10m count by user limit=10 useother=false
+
+Other PowerShell attack tools:
+index=* sourcetype="WinEventLog:Microsoft-Windows-PowerShell/Operational" | timechart span=10m count by host limit=10 useother=false
+
+Detecting Mimikatz:
+index=* (sourcetype="XmlWinEventLog:Microsoft-Windows-Sysmon/Operational" lsass.exe SourceImage="C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe") OR (sourcetype="WinEventLog:Microsoft-Windows-PowerShell/Operational" iex OR Invoke-Expression) | table dvc_dns, sourcetype, SourceImage, TargetImage, GrantedAccess, Message
